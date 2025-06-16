@@ -1,5 +1,6 @@
 package xyz.itseve.picoedit.controllers;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -95,28 +96,92 @@ public class EditorController implements Initializable {
             Tab tab = new Tab();
             tab.setText(displayName);
             tab.setUserData(new TabData(file));
+
+            tab.setOnCloseRequest(e -> {
+                TabData data = (TabData)tab.getUserData();
+
+                if (data.modified) {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setHeaderText(null);
+
+                    alert.setTitle("Unsaved changes");
+                    alert.setContentText("The file " + data.getAssociated().getName() + " has unsaved changes. Close anyway?");
+
+                    ButtonType save = new ButtonType("Save and Discard", ButtonBar.ButtonData.APPLY);
+                    ButtonType discard = new ButtonType("Discard");
+                    ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                    alert.getButtonTypes().setAll(save, discard, cancel);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isEmpty() || result.get().getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
+                        e.consume();
+                        return;
+                    } else if (result.get().getButtonData() == ButtonBar.ButtonData.APPLY) {
+                        handleSave();
+                    }
+
+                    // Predict the next tab so we can change the name
+                    SingleSelectionModel<Tab> selection = tabbedView.getSelectionModel();
+                    ObservableList<Tab> tabs = tabbedView.getTabs();
+
+                    int closingIndex = tabs.indexOf(tab);
+                    Tab nextTab = null;
+
+                    // ???
+                    if (tabs.size() > 1) {
+                        if (selection.getSelectedItem() == tab) {
+                            if (closingIndex > 0) {
+                                nextTab = tabs.get(closingIndex - 1);
+                            } else if (closingIndex < tabs.size() - 1) {
+                                nextTab = tabs.get(closingIndex + 1); 
+                            }
+                        } else {
+                            nextTab = selection.getSelectedItem();
+                        }
+
+                        if (nextTab != null) {
+                            TabData ntd = (TabData)nextTab.getUserData();
+                            if (ntd.modified) {
+                                mainStage.setTitle("PicoEditor (" + ntd.getAssociated().getName() + ") *");
+                            } else {
+                                mainStage.setTitle("PicoEditor (" + ntd.getAssociated().getName() + ")");
+                            }
+                        } else {
+                            mainStage.setTitle("PicoEditor");
+                        }
+                    }
+                }
+            });
+
             mainStage.setTitle("PicoEditor (" + file.getName() + ")");
 
             TextArea editor = new TextArea();
             SplitPane.setResizableWithParent(editor, true);
 
-            editor.textProperty().addListener((obs, oldText, newText) -> {
-                TabData data = (TabData)tab.getUserData();
-                if (data.modified) return;
+            TabData data = (TabData)tab.getUserData();
 
-                if (!data.firstEdited) {
-                    data.firstEdited = true;
-                    return;
-                }
+            try {
+                editor.setText(Files.readString(Path.of(selected.getValue().getAbsolutePath())));
+            } catch (IOException e) {
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setTitle("Unable to read file");
+                error.setContentText("The given file was unable to be read: " + e.getMessage());
+                error.setHeaderText(null);
+
+                error.showAndWait();
+
+                return;
+            }
+
+            editor.textProperty().addListener((obs, oldText, newText) -> {
+                if (!data.firstEdited) return;
+                if (data.modified) return;
 
                 data.modified = true;
                 mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ") *");
             });
 
-            try {
-                editor.setText(Files.readString(Path.of(selected.getValue().getAbsolutePath())));
-            } catch (IOException e) {
-            }
+            data.firstEdited = true;
 
             tab.setContent(editor);
             tabbedView.getTabs().add(tab);
@@ -139,7 +204,12 @@ public class EditorController implements Initializable {
 
             mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
         } catch (IOException e) {
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.setTitle("Unable to write file");
+            error.setContentText("The program could not write to the specified file " + e.getMessage());
+            error.setHeaderText(null);
 
+            error.showAndWait();
         }
     }
 
@@ -157,7 +227,7 @@ public class EditorController implements Initializable {
 
             if (child.isFile()) {
                 root.getChildren().add(
-                        new TreeItem<File>(child)
+                    new TreeItem<File>(child)
                 );
 
                 continue;
