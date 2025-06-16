@@ -9,10 +9,9 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 public class EditorController implements Initializable {
     private File openedDir;
@@ -50,6 +49,45 @@ public class EditorController implements Initializable {
                         item.getName()
                 );
             }
+        });
+
+        // double click to open tab
+        folderView.setOnMouseClicked(event -> {
+            if (event.getClickCount() < 2) return;
+
+            TreeItem<File> selected = folderView.getSelectionModel().getSelectedItem();
+            if (selected == null) return;
+
+            File file = selected.getValue();
+            if (!file.isFile()) return;
+
+            String displayName = file.getName().isEmpty() ? file.getAbsolutePath() : file.getName();
+
+            for (Tab tab : tabbedView.getTabs()) {
+                if (displayName.equals(tab.getText())) {
+                    tabbedView.getSelectionModel().select(tab);
+                    return;
+                }
+            }
+
+            // Create new tab
+            Tab tab = new Tab();
+            tab.setText(displayName);
+
+            TextArea editor = new TextArea();
+            SplitPane.setResizableWithParent(editor, true);
+
+            try {
+                editor.setText(Files.readString(Path.of(selected.getValue().getAbsolutePath())));
+            } catch (IOException e) {
+                throw new RuntimeException("Could not open file: " + e.getMessage());
+            }
+
+            tab.setContent(editor);
+            tabbedView.getTabs().add(tab);
+
+            // Focus new tab
+            tabbedView.getSelectionModel().select(tab);
         });
     }
 
@@ -98,6 +136,8 @@ public class EditorController implements Initializable {
 
         // Set root
         TreeItem<File> root = new TreeItem<>(file);
+        root.setExpanded(true);
+
         folderView.setRoot(root);
 
         // Create the file view.
