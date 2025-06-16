@@ -3,6 +3,9 @@ package xyz.itseve.picoedit;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import xyz.itseve.picoedit.controllers.EditorController;
 
@@ -17,6 +20,10 @@ public class Entry extends Application {
 
         EditorController controller = loader.getController();
         controller.setMainStage(stage);
+
+        // Save on Ctrl + S
+        KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+        scene.getAccelerators().put(ctrlS, controller::handleSave);
 
         stage.setTitle("PicoEdit");
         stage.setScene(scene);

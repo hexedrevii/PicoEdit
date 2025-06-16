@@ -3,8 +3,12 @@ package xyz.itseve.picoedit.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import xyz.itseve.picoedit.TabData;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +37,19 @@ public class EditorController implements Initializable {
 
         folderView.setShowRoot(true);
 
+        // Switch window title when switching tabs
+        tabbedView.getSelectionModel().selectedItemProperty().addListener((obs, newTab, oldTab) -> {
+            if (oldTab == null) return;
+
+            TabData data = (TabData)oldTab.getUserData();
+
+            if (!data.modified) {
+                mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
+            } else {
+                mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ") *");
+            }
+        });
+
         // Prioritise displaying by filename.
         folderView.setCellFactory(tv -> new TreeCell<>() {
             @Override
@@ -51,7 +68,7 @@ public class EditorController implements Initializable {
             }
         });
 
-        // double click to open tab
+        // Double click to open tab
         folderView.setOnMouseClicked(event -> {
             if (event.getClickCount() < 2) return;
 
@@ -66,6 +83,10 @@ public class EditorController implements Initializable {
             for (Tab tab : tabbedView.getTabs()) {
                 if (displayName.equals(tab.getText())) {
                     tabbedView.getSelectionModel().select(tab);
+
+                    TabData data = (TabData)tab.getUserData();
+                    mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
+
                     return;
                 }
             }
@@ -73,14 +94,28 @@ public class EditorController implements Initializable {
             // Create new tab
             Tab tab = new Tab();
             tab.setText(displayName);
+            tab.setUserData(new TabData(file));
+            mainStage.setTitle("PicoEditor (" + file.getName() + ")");
 
             TextArea editor = new TextArea();
             SplitPane.setResizableWithParent(editor, true);
 
+            editor.textProperty().addListener((obs, oldText, newText) -> {
+                TabData data = (TabData)tab.getUserData();
+                if (data.modified) return;
+
+                if (!data.firstEdited) {
+                    data.firstEdited = true;
+                    return;
+                }
+
+                data.modified = true;
+                mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ") *");
+            });
+
             try {
                 editor.setText(Files.readString(Path.of(selected.getValue().getAbsolutePath())));
             } catch (IOException e) {
-                throw new RuntimeException("Could not open file: " + e.getMessage());
             }
 
             tab.setContent(editor);
@@ -89,6 +124,23 @@ public class EditorController implements Initializable {
             // Focus new tab
             tabbedView.getSelectionModel().select(tab);
         });
+    }
+
+    public void handleSave() {
+        Tab selected = tabbedView.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        TextArea content = (TextArea)selected.getContent();
+        TabData data = (TabData)selected.getUserData();
+
+        try {
+            Files.writeString(data.getAssociated().toPath(), content.getText());
+            data.modified = false;
+
+            mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
+        } catch (IOException e) {
+
+        }
     }
 
     private void createChildren(TreeItem<File> root) {
