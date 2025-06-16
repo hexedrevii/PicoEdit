@@ -9,7 +9,9 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
 import xyz.itseve.picoedit.TabData;
+import xyz.itseve.picoedit.Utilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +68,163 @@ public class EditorController implements Initializable {
                         item.getAbsolutePath() :
                         item.getName()
                 );
+
+                // Context menu.
+                if (item.isDirectory()) {
+                    MenuItem nfile = new MenuItem("Add file");
+                    nfile.setOnAction(a -> {
+                        TextInputDialog nf = new TextInputDialog();
+                        nf.setTitle("Create new file");
+                        nf.setHeaderText(null);
+
+                        nf.showAndWait().ifPresent(name -> {
+                            File toCreate = new File(item, name);
+                            try {
+                                if (toCreate.createNewFile()) {
+                                    getTreeItem().getChildren().add(new TreeItem<>(toCreate));
+                                    getTreeItem().setExpanded(true);
+
+                                    getTreeItem().getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
+                                } else {
+                                    Utilities.showBasicError("Could not create file", "File already exists or could not be created.");
+                                }
+                            } catch (IOException e) {
+                                Utilities.showBasicError("Could not create file", e.getMessage());
+                            }
+                        });
+                    });
+
+                    MenuItem ndir = new MenuItem("Add directory");
+                    ndir.setOnAction(a -> {
+                        TextInputDialog nf = new TextInputDialog();
+                        nf.setTitle("Create new directory");
+                        nf.setHeaderText(null);
+
+                        nf.showAndWait().ifPresent(name -> {
+                            File toCreate = new File(item, name);
+                            if (toCreate.mkdir()) {
+                                getTreeItem().getChildren().add(new TreeItem<>(toCreate));
+                                getTreeItem().setExpanded(true);
+
+                                getTreeItem().getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
+                            } else {
+                                Utilities.showBasicError("Could not create file", "File already exists or could not be created.");
+                            }
+                        });
+                    });
+
+                    MenuItem rn = new MenuItem("Rename directory");
+                    rn.setOnAction(a -> {
+                        TextInputDialog nf = new TextInputDialog();
+                        nf.setTitle("Rename directory");
+                        nf.setHeaderText(null);
+
+                        nf.showAndWait().ifPresent(name -> {
+                            File toRename = new File(item.getParent(), name);
+                            if (item.renameTo(toRename)) {
+                                // Set the new item
+                                getTreeItem().setValue(toRename);
+
+                                // Update child paths
+                                Utilities.updateChildrenRecursive(getTreeItem(), item.toPath(), toRename.toPath());
+
+                                Utilities.removeTabsIfNotExistsWithEvent(tabbedView);
+                            } else {
+                                Utilities.showBasicError("Directory could not be renamed.", "Directory already exists or another error occurred.");
+                            }
+                        });
+                    });
+
+                    MenuItem del = new MenuItem("Delete directory");
+                    del.setOnAction(a -> {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setHeaderText(null);
+                        alert.setTitle("Are you sure?");
+                        alert.setContentText("This action is permanent and cannot be reversed. Delete anyway?");
+
+                        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                        ButtonType delete = new ButtonType("Delete", ButtonBar.ButtonData.APPLY);
+                        alert.getButtonTypes().setAll(delete, cancel);
+
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.APPLY) {
+                            try {
+                                FileUtils.deleteDirectory(item);
+
+                                // Erase the item
+                                TreeItem<File> self = getTreeItem();
+                                TreeItem<File> parent = self.getParent();
+
+                                if (parent != null) {
+                                    parent.getChildren().remove(self);
+                                    parent.getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
+                                } else {
+                                    folderView.setRoot(null);
+                                }
+
+                                Utilities.removeTabsIfNotExistsWithEvent(tabbedView);
+                            } catch (IOException e) {
+                                Utilities.showBasicError("Could not delete directory", "The directory could not be deleted " + e.getMessage());
+                            }
+                        }
+                    });
+
+                    setContextMenu(new ContextMenu(nfile, ndir, rn, del));
+                } else if (item.isFile()) {
+                    MenuItem rn = new MenuItem("Rename file");
+                    rn.setOnAction(a -> {
+                        TextInputDialog nf = new TextInputDialog();
+                        nf.setTitle("Rename directory");
+                        nf.setHeaderText(null);
+
+                        nf.showAndWait().ifPresent(name -> {
+                            File toRename = new File(item.getParent(), name);
+                            if (item.renameTo(toRename)) {
+                                // Set the new item
+                                getTreeItem().setValue(toRename);
+
+                                Utilities.removeTabsIfNotExistsWithEvent(tabbedView);
+                            } else {
+                                Utilities.showBasicError("File could not be renamed.", "File already exists or another error occurred.");
+                            }
+                        });
+                    });
+
+                    MenuItem del = new MenuItem("Delete file");
+                    del.setOnAction(a -> {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setHeaderText(null);
+                        alert.setTitle("Are you sure?");
+                        alert.setContentText("This action is permanent and cannot be reversed. Delete anyway?");
+
+                        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                        ButtonType delete = new ButtonType("Delete", ButtonBar.ButtonData.APPLY);
+                        alert.getButtonTypes().setAll(delete, cancel);
+
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.APPLY) {
+                            try {
+                                Files.delete(item.toPath());
+
+                                // Erase the item
+                                TreeItem<File> self = getTreeItem();
+                                TreeItem<File> parent = self.getParent();
+
+                                if (parent != null) {
+                                    parent.getChildren().remove(self);
+                                } else {
+                                    folderView.setRoot(null);
+                                }
+
+                                Utilities.removeTabsIfNotExistsWithEvent(tabbedView);
+                            } catch (IOException e) {
+                                Utilities.showBasicError("Could not delete file.", "File could not be deleted: " + e.getMessage());
+                            }
+                        };
+                    });
+
+                    setContextMenu(new ContextMenu(rn, del));
+                }
             }
         });
 
@@ -133,7 +292,7 @@ public class EditorController implements Initializable {
                             if (closingIndex > 0) {
                                 nextTab = tabs.get(closingIndex - 1);
                             } else if (closingIndex < tabs.size() - 1) {
-                                nextTab = tabs.get(closingIndex + 1); 
+                                nextTab = tabs.get(closingIndex + 1);
                             }
                         } else {
                             nextTab = selection.getSelectedItem();
@@ -213,34 +372,6 @@ public class EditorController implements Initializable {
         }
     }
 
-    private void createChildren(TreeItem<File> root) {
-        File[] rootFiles = root.getValue().listFiles();
-        if (rootFiles == null) return;
-
-        for (File child : rootFiles) {
-            // Skip child if it is in the ignore patterns.
-            if (!child.getName().isEmpty()) {
-                if (ignorePatterns.contains(child.getName())) {
-                    continue;
-                }
-            }
-
-            if (child.isFile()) {
-                root.getChildren().add(
-                    new TreeItem<File>(child)
-                );
-
-                continue;
-            }
-
-            TreeItem<File> newRoot = new TreeItem<File>(child);
-            root.getChildren().add(newRoot);
-
-            // New directory.
-            createChildren(newRoot);
-        }
-    }
-
     @FXML
     private void openFolder() {
         if (mainStage == null) {
@@ -263,7 +394,7 @@ public class EditorController implements Initializable {
         folderView.setRoot(root);
 
         // Create the file view.
-        createChildren(root);
+        Utilities.createChildren(root, ignorePatterns);
 
         // Show all directories first
         root.getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
