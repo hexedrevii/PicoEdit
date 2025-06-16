@@ -8,4 +8,6 @@ module xyz.itseve.picoedit {
 
     opens xyz.itseve.picoedit to javafx.fxml;
     exports xyz.itseve.picoedit;
+    exports xyz.itseve.picoedit.controllers;
+    opens xyz.itseve.picoedit.controllers to javafx.fxml;
 }

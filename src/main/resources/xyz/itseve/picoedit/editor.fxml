@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="xyz.itseve.picoedit.HelloController"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.itseve.picoedit.controllers.EditorController">
+  <MenuBar>
+    <menus>
+      <Menu mnemonicParsing="false" text="File">
+        <MenuItem mnemonicParsing="false" text="Open folder" onAction="#openFolder"/>
+        <MenuItem mnemonicParsing="false" text="Exit"/>
+      </Menu>
+      <Menu mnemonicParsing="false" text="Edit">
+        <MenuItem mnemonicParsing="false" text="Delete"/>
+      </Menu>
+    </menus>
+  </MenuBar>
+  <SplitPane dividerPositions="0.3603678929765886" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+    <TreeView fx:id="folderView" prefHeight="371.0" prefWidth="223.0"/>
+    <TabPane fx:id="tabbedView" VBox.vgrow="ALWAYS"/>
+  </SplitPane>
+</VBox>
