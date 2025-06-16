@@ -7,16 +7,16 @@
   <MenuBar>
     <menus>
       <Menu mnemonicParsing="false" text="File">
-        <MenuItem mnemonicParsing="false" text="Open folder" onAction="#openFolder"/>
-        <MenuItem mnemonicParsing="false" text="Exit"/>
+        <MenuItem mnemonicParsing="false" onAction="#openFolder" text="Open folder" />
+        <MenuItem mnemonicParsing="false" text="Exit" />
       </Menu>
       <Menu mnemonicParsing="false" text="Edit">
-        <MenuItem mnemonicParsing="false" text="Delete"/>
+        <MenuItem mnemonicParsing="false" text="Delete" />
       </Menu>
     </menus>
   </MenuBar>
-  <SplitPane dividerPositions="0.3603678929765886" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-    <TreeView fx:id="folderView" prefHeight="371.0" prefWidth="223.0"/>
-    <TabPane fx:id="tabbedView" VBox.vgrow="ALWAYS"/>
+  <SplitPane dividerPositions="0.290133779264214" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+    <TreeView fx:id="folderView" prefHeight="371.0" prefWidth="223.0" />
+    <TabPane fx:id="tabbedView" VBox.vgrow="ALWAYS" />
   </SplitPane>
 </VBox>

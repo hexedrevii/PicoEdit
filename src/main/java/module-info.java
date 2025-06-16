@@ -5,10 +5,12 @@ module xyz.itseve.picoedit {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
-    requires commons.io;
+    requires org.apache.commons.io;
 
     opens xyz.itseve.picoedit to javafx.fxml;
+
     exports xyz.itseve.picoedit;
     exports xyz.itseve.picoedit.controllers;
+
     opens xyz.itseve.picoedit.controllers to javafx.fxml;
 }
