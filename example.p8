@@ -1,3 +1,11 @@
+-- the code editor works the same way as the pico8;
+-- meaning, all characters are reversed (in appearance)
+-- lowercase characters are shown as upper, and vice-versa.
+--[[
+  abcdefghijklmnopqrstuvxyz
+  ABCDEFGHIJKLMNOPQRSTUVXYZ
+]]
+
 function _init()
   p = {
     sp = 1, spd = 2,

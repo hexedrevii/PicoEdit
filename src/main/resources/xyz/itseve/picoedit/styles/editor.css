@@ -1,0 +1,21 @@
+.root {
+    -fx-font-family: "PICO-8";
+
+    /* PICO-8 palette */
+    -fx-pico0:  #000000; /* black */
+    -fx-pico1:  #1D2B53; /* dark blue */
+    -fx-pico2:  #7E2553; /* dark purple */
+    -fx-pico3:  #008751; /* dark green */
+    -fx-pico4:  #AB5236; /* brown */
+    -fx-pico5:  #5F574F; /* dark gray */
+    -fx-pico6:  #C2C3C7; /* light gray */
+    -fx-pico7:  #FFF1E8; /* white */
+    -fx-pico8:  #FF004D; /* red */
+    -fx-pico9:  #FFA300; /* orange */
+    -fx-pico10: #FFEC27; /* yellow */
+    -fx-pico11: #00E436; /* green */
+    -fx-pico12: #29ADFF; /* blue */
+    -fx-pico13: #83769C; /* lavender */
+    -fx-pico14: #FF77A8; /* pink */
+    -fx-pico15: #FFCCAA; /* peach */
+}

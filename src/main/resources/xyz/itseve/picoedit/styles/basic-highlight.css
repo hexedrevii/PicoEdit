@@ -1,21 +1,25 @@
 .keyword {
-    -fx-fill: #0000ff;
+    -fx-fill: -fx-pico14;
     -fx-font-weight: bold;
 }
 
 .comment {
-    -fx-fill: #008000;
+    -fx-fill: -fx-pico13;
     -fx-font-style: italic;
 }
 
 .string {
-    -fx-fill: #aa0000;
+    -fx-fill: -fx-pico12;
 }
 
 .number {
-    -fx-fill: #990099;
+    -fx-fill: -fx-pico12;
 }
 
 .function {
-    -fx-fill: #cc6600;
+    -fx-fill: -fx-pico11;
+}
+
+.default {
+    -fx-fill: -fx-pico6;
 }

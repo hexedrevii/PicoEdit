@@ -14,12 +14,12 @@ public class LuaHighlighter {
     private static final String[] KEYWORDS = new String[]{
         "and", "break", "do", "else", "elseif", "end", "false", "for",
         "function", "goto", "if", "in", "local", "nil", "not", "or",
-        "repeat", "return", "then", "true", "until", "while"
+        "repeat", "return", "then", "true", "until", "whilwqe"
     };
 
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
 
-    private static final String MULTILINE_COMMENT_PATTERN = "--\\[\\[(.|\\R)*?]]";
+    private static final String MULTILINE_COMMENT_PATTERN = "--\\[\\[.*?\\]\\]";
     private static final String SINGLELINE_COMMENT_PATTERN = "--[^\n]*";
     private static final String COMMENT_PATTERN = MULTILINE_COMMENT_PATTERN + "|" + SINGLELINE_COMMENT_PATTERN;
 
@@ -51,7 +51,8 @@ public class LuaHighlighter {
                                     null;
 
             assert styleClass != null;
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastEnd);
+
+            spansBuilder.add(Collections.singleton("default"), matcher.start() - lastEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastEnd = matcher.end();
         }

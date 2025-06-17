@@ -38,6 +38,9 @@ public class EditorController implements Initializable {
         CodeArea editor = (CodeArea)sel.getContent();
 
         if (allowHighlight) {
+            Boolean isLuaFile = (Boolean) editor.getUserData();
+            if (isLuaFile == null || !isLuaFile) return;
+
             StyleSpans<Collection<String>> spans = LuaHighlighter.computeHighlighting(editor.getText());
             editor.setStyleSpans(0, spans);
 
@@ -45,7 +48,7 @@ public class EditorController implements Initializable {
         }
 
         editor.setStyleSpans(0, new StyleSpansBuilder<Collection<String>>()
-            .add(Collections.emptyList(), editor.getText().length())
+            .add(Collections.singleton("default"), editor.getText().length())
             .create()
         );
     }
@@ -345,14 +348,21 @@ public class EditorController implements Initializable {
             mainStage.setTitle("PicoEditor (" + file.getName() + ")");
 
             CodeArea editor = new CodeArea();
+
+            editor.setUserData(file.getName().endsWith(".lua") || file.getName().endsWith(".p8"));
+
+            // Setup style
+            editor.setStyle(
+                "-fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1;"
+            );
+
             editor.textProperty().addListener((obs, oldText, newText) -> {
+                editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), newText.length()));
+
                 if (!allowHighlight) return;
 
-                Tab sel = tabbedView.getSelectionModel().getSelectedItem();
-                if (sel != null) {
-                    String txt = sel.getText().trim();
-                    if (!(txt.endsWith(".lua") || txt.endsWith(".p8"))) return;
-                }
+                Boolean isLuaFile = (Boolean) editor.getUserData();
+                if (isLuaFile == null || !isLuaFile) return;
 
                 editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(newText));
             });
@@ -361,7 +371,7 @@ public class EditorController implements Initializable {
             editor.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
                 if (k.getCode() == KeyCode.TAB) {
                     int caretPos = editor.getCaretPosition();
-                    editor.insertText(caretPos, "  ");  // insert two spaces
+                    editor.insertText(caretPos, "  ");  // Insert two spaces
                     k.consume();
                 }
             });

@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import xyz.itseve.picoedit.controllers.EditorController;
 
@@ -19,8 +20,28 @@ public class Entry extends Application {
         FXMLLoader loader = new FXMLLoader(Entry.class.getResource("editor.fxml"));
         Scene scene = new Scene(loader.load(), 800, 600);
 
+        // Main UI interface font
+        Font.loadFont(
+            Objects.requireNonNull(
+                Entry.class.getResource("fonts/pico-8_unreversed.ttf")
+            ).toExternalForm(), 20
+        );
+
+        // Code editor font
+        Font.loadFont(
+            Objects.requireNonNull(
+                Entry.class.getResource("fonts/pico-8_reversed.ttf")
+            ).toExternalForm(), 20
+        );
+
         EditorController controller = loader.getController();
         controller.setMainStage(stage);
+
+        scene.getStylesheets().add(
+                Objects.requireNonNull(
+                        Entry.class.getResource("styles/editor.css")
+                ).toExternalForm()
+        );
 
         scene.getStylesheets().add(
             Objects.requireNonNull(
