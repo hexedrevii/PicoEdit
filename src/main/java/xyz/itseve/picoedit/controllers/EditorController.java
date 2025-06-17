@@ -4,9 +4,17 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+import xyz.itseve.picoedit.LuaHighlighter;
 import xyz.itseve.picoedit.TabData;
 import xyz.itseve.picoedit.Utilities;
 
@@ -20,12 +28,37 @@ import java.util.*;
 public class EditorController implements Initializable {
     private File openedDir;
 
+    private boolean allowHighlight = true;
+    @FXML private void toggleHighlight() {
+        allowHighlight = !allowHighlight;
+
+        Tab sel = tabbedView.getSelectionModel().getSelectedItem();
+        if (sel == null) return;
+
+        CodeArea editor = (CodeArea)sel.getContent();
+
+        if (allowHighlight) {
+            StyleSpans<Collection<String>> spans = LuaHighlighter.computeHighlighting(editor.getText());
+            editor.setStyleSpans(0, spans);
+
+            return;
+        }
+
+        editor.setStyleSpans(0, new StyleSpansBuilder<Collection<String>>()
+            .add(Collections.emptyList(), editor.getText().length())
+            .create()
+        );
+    }
+
     @FXML private TreeView<File> folderView;
     @FXML private TabPane tabbedView;
 
     private Stage mainStage = null;
     public void setMainStage(Stage stage) {
         mainStage = stage;
+
+        // Setup smart recognition
+        // TODO
     }
 
     // Hardcoded ignore patterns...
@@ -311,13 +344,34 @@ public class EditorController implements Initializable {
 
             mainStage.setTitle("PicoEditor (" + file.getName() + ")");
 
-            TextArea editor = new TextArea();
+            CodeArea editor = new CodeArea();
+            editor.textProperty().addListener((obs, oldText, newText) -> {
+                if (!allowHighlight) return;
+
+                Tab sel = tabbedView.getSelectionModel().getSelectedItem();
+                if (sel != null) {
+                    String txt = sel.getText().trim();
+                    if (!(txt.endsWith(".lua") || txt.endsWith(".p8"))) return;
+                }
+
+                editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(newText));
+            });
+
+            // Spaces instead of tabs
+            editor.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
+                if (k.getCode() == KeyCode.TAB) {
+                    int caretPos = editor.getCaretPosition();
+                    editor.insertText(caretPos, "  ");  // insert two spaces
+                    k.consume();
+                }
+            });
+
             SplitPane.setResizableWithParent(editor, true);
 
             TabData data = (TabData)tab.getUserData();
 
             try {
-                editor.setText(Files.readString(Path.of(selected.getValue().getAbsolutePath())));
+                editor.replaceText(Files.readString(Path.of(selected.getValue().getAbsolutePath())));
             } catch (IOException e) {
                 Alert error = new Alert(Alert.AlertType.ERROR);
                 error.setTitle("Unable to read file");
@@ -351,7 +405,7 @@ public class EditorController implements Initializable {
         Tab selected = tabbedView.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
-        TextArea content = (TextArea)selected.getContent();
+        CodeArea content = (CodeArea)selected.getContent();
         TabData data = (TabData)selected.getUserData();
 
         try {

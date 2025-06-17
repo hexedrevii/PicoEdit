@@ -6,6 +6,7 @@ module xyz.itseve.picoedit {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires org.apache.commons.io;
+    requires org.fxmisc.richtext;
 
     opens xyz.itseve.picoedit to javafx.fxml;
 

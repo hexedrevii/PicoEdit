@@ -1,0 +1,21 @@
+.keyword {
+    -fx-fill: #0000ff;
+    -fx-font-weight: bold;
+}
+
+.comment {
+    -fx-fill: #008000;
+    -fx-font-style: italic;
+}
+
+.string {
+    -fx-fill: #aa0000;
+}
+
+.number {
+    -fx-fill: #990099;
+}
+
+.function {
+    -fx-fill: #cc6600;
+}

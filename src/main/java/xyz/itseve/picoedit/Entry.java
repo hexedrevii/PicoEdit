@@ -11,6 +11,7 @@ import xyz.itseve.picoedit.controllers.EditorController;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 public class Entry extends Application {
     @Override
@@ -20,6 +21,12 @@ public class Entry extends Application {
 
         EditorController controller = loader.getController();
         controller.setMainStage(stage);
+
+        scene.getStylesheets().add(
+            Objects.requireNonNull(
+                Entry.class.getResource("styles/basic-highlight.css")
+            ).toExternalForm()
+        );
 
         // Save on Ctrl + S
         KeyCombination ctrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
