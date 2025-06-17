@@ -1,5 +1,6 @@
 .root {
     -fx-font-family: "PICO-8";
+    -fx-font-smoothing-type: lcd;
 
     /* PICO-8 palette */
     -fx-pico0:  #000000; /* black */
@@ -18,4 +19,174 @@
     -fx-pico13: #83769C; /* lavender */
     -fx-pico14: #FF77A8; /* pink */
     -fx-pico15: #FFCCAA; /* peach */
+}
+
+.tree-view,
+.tree-view .virtual-flow,
+.tree-view .clipped-container,
+.tree-view .tree-cell {
+    -fx-background-color: -fx-pico5;
+    -fx-text-fill: -fx-pico7;
+}
+
+.tree-view .tree-cell:selected {
+    -fx-background-color: -fx-pico7;
+    -fx-text-fill: -fx-pico0;
+}
+
+.tree-view .tree-disclosure-node > .arrow {
+    -fx-background-color: -fx-pico8;
+}
+
+/* Remove stupid margins */
+.split {
+    -fx-padding: 0;
+    -fx-margin: 0;
+}
+
+.split .split-pane-divider {
+    -fx-background-color: -fx-pico0;
+    -fx-padding: 0;
+    -fx-pref-width: 1px;
+}
+.menu {
+    -fx-background-color: -fx-pico8;
+}
+
+.menu .label {
+    -fx-text-fill: -fx-pico7;
+}
+
+.menu-item:focused {
+    -fx-background-color: -fx-pico14;
+}
+
+.context-menu {
+    -fx-background-color: -fx-pico8;
+    -fx-text-fill: -fx-pico7;
+
+    -fx-padding: 0;
+}
+
+.tabbed {
+    -fx-background-color: -fx-pico1;
+
+    -fx-padding: 0;
+    -fx-margin: 0;
+}
+
+.tabbed:top *.tab-header-area {
+    -fx-background-color: -fx-pico8;
+}
+
+.tabbed .tab {
+    -fx-background-color: -fx-pico14;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+
+    -fx-margin: 0;
+}
+
+.tabbed .tab-close-button {
+    -fx-background-color: -fx-pico8;
+
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-effect: none;
+}
+
+.tabbed .tab:selected .tab-label {
+    -fx-text-fill: -fx-pico7;
+}
+
+.tabbed .tab:focused {
+    -fx-background-color: -fx-pico4;
+}
+
+.tree-view .scroll-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-width: 12px;
+}
+
+.tree-view .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.tree-view .scroll-bar:vertical .thumb {
+    -fx-background-color: -fx-pico7;
+    -fx-background-insets: 2;
+    -fx-background-radius: 0;
+}
+
+.tree-view .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: -fx-pico6;
+}
+
+.tree-view .scroll-bar:vertical .increment-button,
+.tree-view .scroll-bar:vertical .decrement-button {
+        -fx-padding: 0;
+        -fx-pref-height: 0;
+        -fx-pref-width: 0;
+        -fx-min-height: 0;
+        -fx-min-width: 0;
+        -fx-max-height: 0;
+        -fx-max-width: 0;
+        -fx-opacity: 0;
+        -fx-background-color: transparent;
+        -fx-background-insets: 0;
+        -fx-shape: null;
+}
+
+.tree-view .scroll-bar:horizontal .thumb {
+    -fx-background-color: -fx-pico7;
+    -fx-background-insets: 2;
+    -fx-background-radius: 0;
+
+    fx-pref-height: 6px;
+        -fx-pref-width: 6px;
+        -fx-min-height: 6px;
+        -fx-min-width: 6px;
+        -fx-max-height: 6px;
+        -fx-max-width: 6px;
+}
+
+.tree-view .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.tree-view .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: -fx-pico6;
+}
+
+.tree-view .scroll-bar:horizontal .increment-button,
+.tree-view .scroll-bar:horizontal .decrement-button {
+    -fx-padding: 0;
+    -fx-pref-height: 6px;
+    -fx-pref-width: 6px;
+    -fx-min-height: 6px;
+    -fx-min-width: 6px;
+    -fx-max-height: 6px;
+    -fx-max-width: 6px;
+    -fx-opacity: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-shape: null;
+    -fx-cursor: default;
+}
+
+.tree-view .scroll-bar:horizontal .corner {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.tree-view .scroll-bar .corner {
 }

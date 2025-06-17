@@ -353,7 +353,7 @@ public class EditorController implements Initializable {
 
             // Setup style
             editor.setStyle(
-                "-fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1;"
+                "-fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1; -fx-margin: 0;"
             );
 
             editor.textProperty().addListener((obs, oldText, newText) -> {

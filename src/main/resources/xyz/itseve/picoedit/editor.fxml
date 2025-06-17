@@ -4,17 +4,17 @@
 <?import javafx.scene.layout.*?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.itseve.picoedit.controllers.EditorController">
-  <MenuBar>
+  <MenuBar styleClass="menu">
     <Menu mnemonicParsing="false" text="File">
-      <MenuItem mnemonicParsing="false" onAction="#openFolder" text="Open folder"/>
-      <MenuItem mnemonicParsing="false" text="Exit"/>
+      <MenuItem mnemonicParsing="false" onAction="#openFolder" text="Open folder" />
+      <MenuItem mnemonicParsing="false" text="Exit" />
     </Menu>
     <Menu mnemonicParsing="false" text="View">
-      <MenuItem mnemonicParsing="false" text="Toggle Syntax Highlighting" onAction="#toggleHighlight"/>
+      <MenuItem mnemonicParsing="false" onAction="#toggleHighlight" text="Toggle Syntax Highlighting" />
     </Menu>
   </MenuBar>
-  <SplitPane dividerPositions="0.290133779264214" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-    <TreeView fx:id="folderView" prefHeight="371.0" prefWidth="223.0" />
-    <TabPane fx:id="tabbedView" VBox.vgrow="ALWAYS" />
+  <SplitPane dividerPositions="0.290133779264214" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="160.0" prefWidth="200.0" styleClass="split" VBox.vgrow="ALWAYS">
+    <TreeView fx:id="folderView" prefHeight="371.0" prefWidth="223.0" styleClass="tree-view" />
+    <TabPane fx:id="tabbedView" styleClass="tabbed" VBox.vgrow="ALWAYS" />
   </SplitPane>
 </VBox>
