@@ -350,7 +350,7 @@ public class EditorController implements Initializable {
             CodeArea editor = new CodeArea();
             editor.setUserData(file.getName().endsWith(".lua") || file.getName().endsWith(".p8"));
             editor.setStyle(
-                "-fx-tab-size: 4; -fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1; -fx-margin: 0;"
+                "-fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1; -fx-margin: 0;"
             );
 
             editor.plainTextChanges()
@@ -377,15 +377,6 @@ public class EditorController implements Initializable {
                         editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(text));
                     });
                 });
-
-            // Spaces instead of tabs
-            editor.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
-                if (k.getCode() == KeyCode.TAB) {
-                    int caretPos = editor.getCaretPosition();
-                    editor.insertText(caretPos, "  ");  // Insert two spaces
-                    k.consume();
-                }
-            });
 
             TabData data = (TabData)tab.getUserData();
 

@@ -1,6 +1,4 @@
 .root {
-    -fx-tab-size: 4;
-
     -fx-font-family: "PICO-8";
     -fx-font-smoothing-type: lcd;
 
@@ -23,8 +21,7 @@
     -fx-pico15: #FFCCAA; /* peach */
 }
 
-Text { -fx-tab-size: 4;}
-TextExt { -fx-tab-size: 4; }
+ParagraphText { -fx-tab-size: 2 }
 
 .tree-view,
 .tree-view .virtual-flow,
