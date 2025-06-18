@@ -18,12 +18,15 @@ public class LuaHighlighter {
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
 
     private static final String MULTILINE_COMMENT_PATTERN = "--\\[\\[.*?\\]\\]";
-    private static final String SINGLELINE_COMMENT_PATTERN = "--[^\n]*";
+    private static final String SINGLELINE_COMMENT_PATTERN = "(--|//)[^\n]*";
     private static final String COMMENT_PATTERN = MULTILINE_COMMENT_PATTERN + "|" + SINGLELINE_COMMENT_PATTERN;
 
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"|'([^'\\\\]|\\\\.)*'|\\[\\[(.|\\R)*?]]";
     private static final String NUMBER_PATTERN = "\\b\\d+(\\.\\d+)?\\b";
-    private static final String FUNCTION_CALL_PATTERN = "\\b(\\w+)\\s*(?=\\()";
+    private static final String FUNCTION_CALL_PATTERN =
+            "\\b(\\w+)\\s*(?=\\()"
+                    + "|\\b(\\w+)\\s*(?=(\"[^\"]*\"|'[^']*'|\\[\\[(.|\\R)*?]]))"
+                    + "|\\b(\\w+)\\s*(?=\\{)";
 
     private static final Pattern PATTERN = Pattern.compile(
         "(?<KEYWORD>" + KEYWORD_PATTERN + ")"

@@ -2,35 +2,39 @@
 -- meaning, all characters are reversed (in appearance)
 -- lowercase characters are shown as upper, and vice-versa.
 --[[
- abcdefghijklmnopqrstuvxyz
- ABCDEFGHIJKLMNOPQRSTUVXYZ
+ abcdefghijklmnopqrstuvxyz <- lower
+ ABCDEFGHIJKLMNOPQRSTUVXYZ <- upper
 ]]
 
+// pico8 also suppoers c-style comments.
+
 function __player_push()
- if p.x < 120 then
-  p.y += 3
- end
+ 	if p.x < 120 then
+		p.y += 3
+	end
 end
 
 function _init()
- p = {
-  sp = 1, spd = 2,
-  x = 10, y = 20,
- }
+	p = {
+		sp = 1, spd = 2,
+		x = 10, y = 20,
+	}
 end
 
 function _update()
- __player_push()
+	__player_push()
 
- -- movement
- if btn(0) then
-  p.x -= spd
- elseif btn(1) then
-  p.x += spd
- end
+	-- movement
+	if btn(0) then
+		p.x -= spd
+	elseif btn(1) then
+		p.x += spd
+	end
 end
 
 function _draw()
- print("hello, world!", 10, 10, 0)
- spr(p.sp, p.x, p.y)
+	-- we can even call without (), like in the p8 
+  print"hello, world!", 10, 10, 0
+
+	spr(p.sp, p.x, p.y)
 end
