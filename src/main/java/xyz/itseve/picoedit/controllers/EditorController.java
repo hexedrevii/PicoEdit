@@ -1,5 +1,6 @@
 package xyz.itseve.picoedit.controllers;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,13 +11,11 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.InlineCssTextArea;
-import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import xyz.itseve.picoedit.LuaHighlighter;
-import xyz.itseve.picoedit.TabData;
-import xyz.itseve.picoedit.Utilities;
+import xyz.itseve.picoedit.utils.LuaHighlighter;
+import xyz.itseve.picoedit.models.TabData;
+import xyz.itseve.picoedit.utils.Utilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,6 +69,8 @@ public class EditorController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ignorePatterns = List.of(".git");
+
+        SplitPane.setResizableWithParent(folderView, false);
 
         folderView.setShowRoot(true);
 
@@ -348,24 +349,35 @@ public class EditorController implements Initializable {
             mainStage.setTitle("PicoEditor (" + file.getName() + ")");
 
             CodeArea editor = new CodeArea();
-
             editor.setUserData(file.getName().endsWith(".lua") || file.getName().endsWith(".p8"));
-
-            // Setup style
             editor.setStyle(
                 "-fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1; -fx-margin: 0;"
             );
 
-            editor.textProperty().addListener((obs, oldText, newText) -> {
-                editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), newText.length()));
+            editor.plainTextChanges()
+                .filter(change -> !change.getInserted().isEmpty() || !change.getRemoved().isEmpty())
+                .subscribe(change -> {
+                    String text = editor.getText();
 
-                if (!allowHighlight) return;
+                    if (!allowHighlight) {
+                        Platform.runLater(() -> {
+                            editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), text.length()));
+                        });
+                        return;
+                    }
 
-                Boolean isLuaFile = (Boolean) editor.getUserData();
-                if (isLuaFile == null || !isLuaFile) return;
+                    Boolean isLuaFile = (Boolean) editor.getUserData();
+                    if (isLuaFile == null || !isLuaFile) {
+                        Platform.runLater(() -> {
+                            editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), text.length()));
+                        });
+                        return;
+                    }
 
-                editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(newText));
-            });
+                    Platform.runLater(() -> {
+                        editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(text));
+                    });
+                });
 
             // Spaces instead of tabs
             editor.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
@@ -375,8 +387,6 @@ public class EditorController implements Initializable {
                     k.consume();
                 }
             });
-
-            SplitPane.setResizableWithParent(editor, true);
 
             TabData data = (TabData)tab.getUserData();
 
@@ -409,6 +419,11 @@ public class EditorController implements Initializable {
             // Focus new tab
             tabbedView.getSelectionModel().select(tab);
         });
+    }
+
+    public void handleExitRequest() {
+        // TODO: Notice unsaved changes.
+        mainStage.close();
     }
 
     public void handleSave() {

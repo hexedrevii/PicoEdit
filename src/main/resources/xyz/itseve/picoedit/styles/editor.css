@@ -190,3 +190,7 @@
 
 .tree-view .scroll-bar .corner {
 }
+
+.caret {
+    -fx-stroke: -fx-pico8;
+}

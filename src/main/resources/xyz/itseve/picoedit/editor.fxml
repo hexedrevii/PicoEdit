@@ -7,7 +7,7 @@
   <MenuBar styleClass="menu">
     <Menu mnemonicParsing="false" text="File">
       <MenuItem mnemonicParsing="false" onAction="#openFolder" text="Open folder" />
-      <MenuItem mnemonicParsing="false" text="Exit" />
+      <MenuItem mnemonicParsing="false" text="Exit" onAction="#handleExitRequest" />
     </Menu>
     <Menu mnemonicParsing="false" text="View">
       <MenuItem mnemonicParsing="false" onAction="#toggleHighlight" text="Toggle Syntax Highlighting" />

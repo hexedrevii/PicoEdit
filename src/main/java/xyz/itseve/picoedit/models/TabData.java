@@ -1,4 +1,4 @@
-package xyz.itseve.picoedit;
+package xyz.itseve.picoedit.models;
 
 import java.io.File;
 

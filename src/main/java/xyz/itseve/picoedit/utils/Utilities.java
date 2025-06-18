@@ -1,4 +1,4 @@
-package xyz.itseve.picoedit;
+package xyz.itseve.picoedit.utils;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -6,6 +6,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
+import xyz.itseve.picoedit.models.TabData;
 
 import java.io.File;
 import java.nio.file.Path;

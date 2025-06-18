@@ -1,7 +1,5 @@
-package xyz.itseve.picoedit;
+package xyz.itseve.picoedit.utils;
 
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
