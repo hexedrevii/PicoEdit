@@ -48,14 +48,12 @@ public class LuaHighlighter {
                                 matcher.group("FUNC") != null ? "function" :
                                     null;
 
-            assert styleClass != null;
-
             spansBuilder.add(Collections.singleton("default"), matcher.start() - lastEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastEnd = matcher.end();
         }
 
-        spansBuilder.add(Collections.emptyList(), text.length() - lastEnd);
+        spansBuilder.add(Collections.singleton("default"), text.length() - lastEnd);
         return spansBuilder.create();
     }
 }

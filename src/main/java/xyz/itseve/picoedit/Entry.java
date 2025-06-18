@@ -17,8 +17,6 @@ import java.util.Objects;
 public class Entry extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        System.setProperty("prism.lcdtext", "false");
-
         FXMLLoader loader = new FXMLLoader(Entry.class.getResource("editor.fxml"));
         Scene scene = new Scene(loader.load(), 800, 600);
 
