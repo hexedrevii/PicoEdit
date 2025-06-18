@@ -353,30 +353,28 @@ public class EditorController implements Initializable {
                 "-fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1; -fx-margin: 0;"
             );
 
-            editor.plainTextChanges()
-                .filter(change -> !change.getInserted().isEmpty() || !change.getRemoved().isEmpty())
-                .subscribe(change -> {
-                    String text = editor.getText();
+            editor.textProperty().addListener((obs, oldText, newText) -> {
+                String text = editor.getText();
 
-                    if (!allowHighlight) {
-                        Platform.runLater(() -> {
-                            editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), text.length()));
-                        });
-                        return;
-                    }
-
-                    Boolean isLuaFile = (Boolean) editor.getUserData();
-                    if (isLuaFile == null || !isLuaFile) {
-                        Platform.runLater(() -> {
-                            editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), text.length()));
-                        });
-                        return;
-                    }
-
+                if (!allowHighlight) {
                     Platform.runLater(() -> {
-                        editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(text));
+                        editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), text.length()));
                     });
+                    return;
+                }
+
+                Boolean isLuaFile = (Boolean) editor.getUserData();
+                if (isLuaFile == null || !isLuaFile) {
+                    Platform.runLater(() -> {
+                        editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), text.length()));
+                    });
+                    return;
+                }
+
+                Platform.runLater(() -> {
+                    editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(text));
                 });
+            });
 
             TabData data = (TabData)tab.getUserData();
 

@@ -7,7 +7,6 @@ module xyz.itseve.picoedit {
     requires org.kordamp.bootstrapfx.core;
     requires org.apache.commons.io;
     requires org.fxmisc.richtext;
-    requires reactfx;
 
     opens xyz.itseve.picoedit to javafx.fxml;
 
