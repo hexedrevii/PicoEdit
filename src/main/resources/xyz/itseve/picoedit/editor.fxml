@@ -10,7 +10,7 @@
       <MenuItem mnemonicParsing="false" text="Exit" onAction="#handleExitRequest" />
     </Menu>
     <Menu mnemonicParsing="false" text="View">
-      <MenuItem mnemonicParsing="false" onAction="#toggleHighlight" text="Toggle Syntax Highlighting" />
+      <MenuItem mnemonicParsing="false" onAction="#toggleHighlight" text="Toggle syntax highlighting" />
     </Menu>
   </MenuBar>
   <SplitPane dividerPositions="0.290133779264214" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="160.0" prefWidth="200.0" styleClass="split" VBox.vgrow="ALWAYS">

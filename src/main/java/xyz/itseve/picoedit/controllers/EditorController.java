@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
@@ -354,11 +355,9 @@ public class EditorController implements Initializable {
             );
 
             editor.textProperty().addListener((obs, oldText, newText) -> {
-                String text = editor.getText();
-
                 if (!allowHighlight) {
                     Platform.runLater(() -> {
-                        editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), text.length()));
+                        editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), newText.length()));
                     });
                     return;
                 }
@@ -366,13 +365,13 @@ public class EditorController implements Initializable {
                 Boolean isLuaFile = (Boolean) editor.getUserData();
                 if (isLuaFile == null || !isLuaFile) {
                     Platform.runLater(() -> {
-                        editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), text.length()));
+                        editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), newText.length()));
                     });
                     return;
                 }
 
                 Platform.runLater(() -> {
-                    editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(text));
+                    editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(newText));
                 });
             });
 
@@ -438,14 +437,23 @@ public class EditorController implements Initializable {
 
     @FXML
     private void openFolder() {
-        if (mainStage == null) {
-            throw new RuntimeException("Main parent is empty.");
-        }
+        if (mainStage == null) throw new RuntimeException("Main parent is empty.");
 
         DirectoryChooser dir = new DirectoryChooser();
         dir.setTitle("Choose folder.");
 
-        // TODO: Open to the lexaloffle directory (pico8/carts)
+        // Set the starting directory to the respective lexaloffle carts directory.
+        // ONLY if it exists.
+        File cartsDir = null;
+
+        String userHome = System.getProperty("user.home");
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) cartsDir = new File(userHome, "AppData/Roaming/pico-8/carts");
+        else if (os.contains("mac")) cartsDir = new File(userHome, "Library/Application Support/pico-8/carts");
+        else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) cartsDir = new File(userHome, ".lexaloffle/pico-8/carts");
+
+        if (cartsDir != null && cartsDir.exists() && cartsDir.isDirectory())
+            dir.setInitialDirectory(cartsDir);
 
         File file = dir.showDialog(mainStage);
         if (file == null) return;
