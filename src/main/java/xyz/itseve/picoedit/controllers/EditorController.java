@@ -59,8 +59,7 @@ public class EditorController implements Initializable {
     public void setMainStage(Stage stage) {
         mainStage = stage;
 
-        // Setup smart recognition
-        // TODO
+        // TODO: Setup smart recognition
     }
 
     // Hardcoded ignore patterns...
@@ -351,7 +350,7 @@ public class EditorController implements Initializable {
             CodeArea editor = new CodeArea();
             editor.setUserData(file.getName().endsWith(".lua") || file.getName().endsWith(".p8"));
             editor.setStyle(
-                "-fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1; -fx-margin: 0;"
+                "-fx-tab-size: 4; -fx-font-family: 'PICO-8_REVERSE'; -fx-font-size: 18px; -fx-background-color: -fx-pico1; -fx-margin: 0;"
             );
 
             editor.plainTextChanges()
@@ -456,6 +455,8 @@ public class EditorController implements Initializable {
 
         DirectoryChooser dir = new DirectoryChooser();
         dir.setTitle("Choose folder.");
+
+        // TODO: Open to the lexaloffle directory (pico8/carts)
 
         File file = dir.showDialog(mainStage);
         if (file == null) return;
