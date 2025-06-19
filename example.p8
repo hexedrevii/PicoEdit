@@ -6,7 +6,7 @@
  ABCDEFGHIJKLMNOPQRSTUVXYZ <- upper
 ]]
 
-// pico8 also suppoers c-style comments.
+// pico-8 also supports c-style comments.
 
 function __player_push()
  	if p.x < 120 then

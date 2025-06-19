@@ -11,6 +11,8 @@ public class TabData {
         return associated;
     }
 
+    public long lastModified;
+
     public TabData(File file) {
         associated = file;
     }

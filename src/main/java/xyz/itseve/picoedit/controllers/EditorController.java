@@ -60,7 +60,83 @@ public class EditorController implements Initializable {
     public void setMainStage(Stage stage) {
         mainStage = stage;
 
-        // TODO: Setup smart recognition
+        mainStage.focusedProperty().addListener((obs, lost, found) -> {
+            // Focus was regained.
+            if (found) {
+                // Close tabs if the file is gone.
+                Utilities.removeTabsIfNotExistsWithEvent(tabbedView);
+
+                // Recreate the tree view
+                if (openedDir != null) {
+                    // Kill
+                    folderView.setRoot(null);
+
+                    TreeItem<File> root = new TreeItem<>(openedDir);
+                    root.setExpanded(true);
+
+                    folderView.setRoot(root);
+
+                    // Create the file view.
+                    Utilities.createChildren(root, ignorePatterns);
+
+                    // Show all directories first
+                    root.getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
+                }
+
+                // Check if file was modified while we were out.
+                for (Tab tab : tabbedView.getTabs()) {
+                    TabData data = (TabData)tab.getUserData();
+                    if (data.lastModified != data.getAssociated().lastModified()) {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setHeaderText(null);
+                        alert.setTitle("File modified");
+                        alert.setContentText("The file " + data.getAssociated().getName() + " was modified. What would you like to do?");
+
+                        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                        ButtonType delete = new ButtonType("Discard your changes", ButtonBar.ButtonData.FINISH);
+                        ButtonType apply = new ButtonType("Overwrite with your changes.", ButtonBar.ButtonData.APPLY);
+                        alert.getButtonTypes().setAll(delete, cancel, apply);
+
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent()) {
+                            ButtonType btn = result.get();
+                            CodeArea editor = (CodeArea)tab.getContent();
+
+                            if (btn.getButtonData() == ButtonBar.ButtonData.FINISH) {
+                                try {
+                                    editor.replaceText(Files.readString(Path.of(data.getAssociated().getAbsolutePath())));
+                                    mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
+
+                                } catch (IOException e) {
+                                    Alert error = new Alert(Alert.AlertType.ERROR);
+                                    error.setTitle("Unable to read file");
+                                    error.setContentText("The given file was unable to be read: " + e.getMessage());
+                                    error.setHeaderText(null);
+
+                                    error.showAndWait();
+                                }
+                            } else if (btn.getButtonData() == ButtonBar.ButtonData.APPLY) {
+                                try {
+                                    Files.writeString(data.getAssociated().toPath(), editor.getText());
+                                    data.modified = false;
+
+                                    mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
+                                } catch (IOException e) {
+                                    Alert error = new Alert(Alert.AlertType.ERROR);
+                                    error.setTitle("Unable to write file");
+                                    error.setContentText("The program could not write to the specified file " + e.getMessage());
+                                    error.setHeaderText(null);
+
+                                    error.showAndWait();
+                                }
+                            }
+                        }
+
+                        data.lastModified = data.getAssociated().lastModified();
+                    }
+                }
+            }
+        });
     }
 
     // Hardcoded ignore patterns...
@@ -376,6 +452,7 @@ public class EditorController implements Initializable {
             });
 
             TabData data = (TabData)tab.getUserData();
+            data.lastModified = file.lastModified();
 
             try {
                 editor.replaceText(Files.readString(Path.of(selected.getValue().getAbsolutePath())));
@@ -410,6 +487,7 @@ public class EditorController implements Initializable {
 
     public void handleExitRequest() {
         // TODO: Notice unsaved changes.
+
         mainStage.close();
     }
 
@@ -423,6 +501,7 @@ public class EditorController implements Initializable {
         try {
             Files.writeString(data.getAssociated().toPath(), content.getText());
             data.modified = false;
+            data.lastModified = data.getAssociated().lastModified();
 
             mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
         } catch (IOException e) {
