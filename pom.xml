@@ -6,7 +6,7 @@
 
     <groupId>xyz.itsEve</groupId>
     <artifactId>PicoEdit</artifactId>
-    <version>0.3</version>
+    <version>0.3.1</version>
     <name>PicoEdit</name>
 
     <properties>

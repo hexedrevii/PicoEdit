@@ -78,7 +78,11 @@ ParagraphText { -fx-tab-size: 2 }
     -fx-margin: 0;
 }
 
-.tabbed:top *.tab-header-area {
+.tabbed .tab-header-background {
+    -fx-background-color: -fx-pico2;
+}
+
+.tabbed .tab-header-area .control-buttons-tab .tab-down-button {
     -fx-background-color: -fx-pico8;
 }
 
