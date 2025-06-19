@@ -60,6 +60,12 @@ public class EditorController implements Initializable {
     public void setMainStage(Stage stage) {
         mainStage = stage;
 
+        // Set closure properties
+        mainStage.setOnCloseRequest((event) -> {
+            noticeUnsaved();
+        });
+
+        // Set focused properties
         mainStage.focusedProperty().addListener((obs, lost, found) -> {
             // Focus was regained.
             if (found) {
@@ -485,8 +491,47 @@ public class EditorController implements Initializable {
         });
     }
 
+    private void noticeUnsaved() {
+        for (Tab tab : tabbedView.getTabs()) {
+            TabData data = (TabData)tab.getUserData();
+            if (!data.modified) continue;
+
+            // Unsaved file
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText(null);
+
+            alert.setTitle("Unsaved changes");
+            alert.setContentText("The file " + data.getAssociated().getName() + " has unsaved changes.");
+
+            ButtonType discard = new ButtonType("Discard changes");
+            ButtonType apply = new ButtonType("Apply changes", ButtonBar.ButtonData.APPLY);
+            alert.getButtonTypes().setAll(discard, apply);
+
+            Optional<ButtonType> opt = alert.showAndWait();
+            if (opt.isEmpty()) continue;
+
+            ButtonType btn = opt.get();
+            CodeArea editor = (CodeArea)tab.getContent();
+            if (btn.getButtonData() == ButtonBar.ButtonData.APPLY) {
+                try {
+                    Files.writeString(data.getAssociated().toPath(), editor.getText());
+                    data.modified = false;
+
+                    mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
+                } catch (IOException e) {
+                    Alert error = new Alert(Alert.AlertType.ERROR);
+                    error.setTitle("Unable to write file");
+                    error.setContentText("The program could not write to the specified file " + e.getMessage());
+                    error.setHeaderText(null);
+
+                    error.showAndWait();
+                }
+            }
+        }
+    }
+
     public void handleExitRequest() {
-        // TODO: Notice unsaved changes.
+        noticeUnsaved();
 
         mainStage.close();
     }
