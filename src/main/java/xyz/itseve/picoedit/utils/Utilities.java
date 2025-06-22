@@ -2,15 +2,13 @@ package xyz.itseve.picoedit.utils;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import xyz.itseve.picoedit.models.TabData;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Utilities {
@@ -57,7 +55,9 @@ public class Utilities {
         }
     }
 
-    public static void createChildren(TreeItem<File> root, List<String> ignorePatterns) {
+    public static void createChildren(
+        TreeItem<File> root, List<String> ignorePatterns, List<File> expandPatterns
+    ) {
         File[] rootFiles = root.getValue().listFiles();
         if (rootFiles == null) return;
 
@@ -71,17 +71,52 @@ public class Utilities {
 
             if (child.isFile()) {
                 root.getChildren().add(
-                        new TreeItem<File>(child)
+                    new TreeItem<File>(child)
                 );
 
                 continue;
             }
 
             TreeItem<File> newRoot = new TreeItem<File>(child);
+            if (expandPatterns.contains(newRoot.getValue())) {
+                newRoot.setExpanded(true);
+            }
+
             root.getChildren().add(newRoot);
 
             // New directory.
-            createChildren(newRoot, ignorePatterns);
+            createChildren(newRoot, ignorePatterns, expandPatterns);
         }
+    }
+
+    public static List<File> findAllExpandsRecursive(TreeItem<File> root) {
+        List<File> expand = new ArrayList<File>();
+        if (root.isExpanded()) {
+            expand.add(root.getValue());
+        }
+
+        for (TreeItem<File> child : root.getChildren()) {
+            if (child.isExpanded()) {
+                expand.addAll(findAllExpandsRecursive(child));
+            }
+        }
+
+        return expand;
+    }
+
+    public static void createTree(
+        TreeView<File> parent, File rootFile,
+        List<String> ignorePatterns, List<File> expandPatterns
+    ) {
+        TreeItem<File> root = new TreeItem<>(rootFile);
+        root.setExpanded(true);
+
+        parent.setRoot(root);
+
+        // Create the file view.
+        createChildren(root, ignorePatterns, expandPatterns);
+
+        // Show all directories first
+        root.getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
     }
 }

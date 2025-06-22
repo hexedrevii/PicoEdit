@@ -74,19 +74,10 @@ public class EditorController implements Initializable {
 
                 // Recreate the tree view
                 if (openedDir != null) {
-                    // Kill
+                    List<File> expand = Utilities.findAllExpandsRecursive(folderView.getRoot());
                     folderView.setRoot(null);
 
-                    TreeItem<File> root = new TreeItem<>(openedDir);
-                    root.setExpanded(true);
-
-                    folderView.setRoot(root);
-
-                    // Create the file view.
-                    Utilities.createChildren(root, ignorePatterns);
-
-                    // Show all directories first
-                    root.getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
+                    Utilities.createTree(folderView, openedDir, ignorePatterns, expand);
                 }
 
                 // Check if file was modified while we were out.
@@ -113,27 +104,17 @@ public class EditorController implements Initializable {
                                     editor.replaceText(Files.readString(Path.of(data.getAssociated().getAbsolutePath())));
                                     mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
 
+                                    LuaHighlighter.computeHighlighting(editor.getText());
                                 } catch (IOException e) {
-                                    Alert error = new Alert(Alert.AlertType.ERROR);
-                                    error.setTitle("Unable to read file");
-                                    error.setContentText("The given file was unable to be read: " + e.getMessage());
-                                    error.setHeaderText(null);
-
-                                    error.showAndWait();
+                                    Utilities.showBasicError("Unable to write to file", "The given file was unable to be read: " + e.getMessage());
                                 }
                             } else if (btn.getButtonData() == ButtonBar.ButtonData.APPLY) {
                                 try {
                                     Files.writeString(data.getAssociated().toPath(), editor.getText());
                                     data.modified = false;
-
                                     mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
                                 } catch (IOException e) {
-                                    Alert error = new Alert(Alert.AlertType.ERROR);
-                                    error.setTitle("Unable to write file");
-                                    error.setContentText("The program could not write to the specified file " + e.getMessage());
-                                    error.setHeaderText(null);
-
-                                    error.showAndWait();
+                                    Utilities.showBasicError("Unable to write to file", "The program could not write to the specified file " + e.getMessage());
                                 }
                             }
                         }
@@ -243,7 +224,6 @@ public class EditorController implements Initializable {
 
                                 // Update child paths
                                 Utilities.updateChildrenRecursive(getTreeItem(), item.toPath(), toRename.toPath());
-
                                 Utilities.removeTabsIfNotExistsWithEvent(tabbedView);
                             } else {
                                 Utilities.showBasicError("Directory could not be renamed.", "Directory already exists or another error occurred.");
@@ -394,37 +374,6 @@ public class EditorController implements Initializable {
                     } else if (result.get().getButtonData() == ButtonBar.ButtonData.APPLY) {
                         handleSave();
                     }
-
-                    // Predict the next tab so we can change the name
-                    SingleSelectionModel<Tab> selection = tabbedView.getSelectionModel();
-                    ObservableList<Tab> tabs = tabbedView.getTabs();
-
-                    int closingIndex = tabs.indexOf(tab);
-                    Tab nextTab = null;
-
-                    // ???
-                    if (tabs.size() > 1) {
-                        if (selection.getSelectedItem() == tab) {
-                            if (closingIndex > 0) {
-                                nextTab = tabs.get(closingIndex - 1);
-                            } else if (closingIndex < tabs.size() - 1) {
-                                nextTab = tabs.get(closingIndex + 1);
-                            }
-                        } else {
-                            nextTab = selection.getSelectedItem();
-                        }
-
-                        if (nextTab != null) {
-                            TabData ntd = (TabData)nextTab.getUserData();
-                            if (ntd.modified) {
-                                mainStage.setTitle("PicoEditor (" + ntd.getAssociated().getName() + ") *");
-                            } else {
-                                mainStage.setTitle("PicoEditor (" + ntd.getAssociated().getName() + ")");
-                            }
-                        } else {
-                            mainStage.setTitle("PicoEditor");
-                        }
-                    }
                 }
             });
 
@@ -463,13 +412,7 @@ public class EditorController implements Initializable {
             try {
                 editor.replaceText(Files.readString(Path.of(selected.getValue().getAbsolutePath())));
             } catch (IOException e) {
-                Alert error = new Alert(Alert.AlertType.ERROR);
-                error.setTitle("Unable to read file");
-                error.setContentText("The given file was unable to be read: " + e.getMessage());
-                error.setHeaderText(null);
-
-                error.showAndWait();
-
+                Utilities.showBasicError("Unable to read file", "The given file was unable to be read: " + e.getMessage());
                 return;
             }
 
@@ -519,12 +462,7 @@ public class EditorController implements Initializable {
 
                     mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
                 } catch (IOException e) {
-                    Alert error = new Alert(Alert.AlertType.ERROR);
-                    error.setTitle("Unable to write file");
-                    error.setContentText("The program could not write to the specified file " + e.getMessage());
-                    error.setHeaderText(null);
-
-                    error.showAndWait();
+                    Utilities.showBasicError("Could not write to file", "The program could not write to the specified file " + e.getMessage());
                 }
             }
         }
@@ -532,7 +470,6 @@ public class EditorController implements Initializable {
 
     public void handleExitRequest() {
         noticeUnsaved();
-
         mainStage.close();
     }
 
@@ -585,16 +522,7 @@ public class EditorController implements Initializable {
 
         openedDir = file;
 
-        // Set root
-        TreeItem<File> root = new TreeItem<>(file);
-        root.setExpanded(true);
-
-        folderView.setRoot(root);
-
-        // Create the file view.
-        Utilities.createChildren(root, ignorePatterns);
-
-        // Show all directories first
-        root.getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
+        // Empty expand patterns because... we cannot have any at this point.
+        Utilities.createTree(folderView, openedDir, ignorePatterns, new ArrayList<File>());
     }
 }
