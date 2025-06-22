@@ -3,7 +3,7 @@
 PicoEditor is a small text editor made for Pico8 games!
 
 ![funny](./img/showcase.png)
-![funny2](./img/showcase_2)
+![funny2](img/showcase_2.png)
 
 # Building
 This is a java app, so we will need the JDK (21 as of right now).
@@ -18,7 +18,7 @@ sudo apt install openjdk-21-jdk openjdk-21-jre git maven
 sudo pacman -S openjdk-21 git maven
 ```
 
-Now, we can setup the app.
+Now, we can set up the app.
 
 We start by cloning the github repository.
 ```bash
