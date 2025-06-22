@@ -22,7 +22,7 @@ public class Utilities {
     }
 
     public static void removeTabsIfNotExistsWithEvent(TabPane parent) {
-        List<Tab> toRemove = new ArrayList<Tab>();
+        List<Tab> toRemove = new ArrayList<>();
         for (Tab tab : parent.getTabs()) {
             TabData td = (TabData)tab.getUserData();
             if (!td.getAssociated().exists()) {
@@ -71,13 +71,13 @@ public class Utilities {
 
             if (child.isFile()) {
                 root.getChildren().add(
-                    new TreeItem<File>(child)
+                    new TreeItem<>(child)
                 );
 
                 continue;
             }
 
-            TreeItem<File> newRoot = new TreeItem<File>(child);
+            TreeItem<File> newRoot = new TreeItem<>(child);
             if (expandPatterns.contains(newRoot.getValue())) {
                 newRoot.setExpanded(true);
             }
@@ -90,7 +90,7 @@ public class Utilities {
     }
 
     public static List<File> findAllExpandsRecursive(TreeItem<File> root) {
-        List<File> expand = new ArrayList<File>();
+        List<File> expand = new ArrayList<>();
         if (root.isExpanded()) {
             expand.add(root.getValue());
         }

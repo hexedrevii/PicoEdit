@@ -12,12 +12,12 @@ public class LuaHighlighter {
     private static final String[] KEYWORDS = new String[]{
         "and", "break", "do", "else", "elseif", "end", "false", "for",
         "function", "goto", "if", "in", "local", "nil", "not", "or",
-        "repeat", "return", "then", "true", "until", "whilwqe"
+        "repeat", "return", "then", "true", "until", "while"
     };
 
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
 
-    private static final String MULTILINE_COMMENT_PATTERN = "--\\[\\[.*?\\]\\]";
+    private static final String MULTILINE_COMMENT_PATTERN = "--\\[\\[.*?]]";
     private static final String SINGLELINE_COMMENT_PATTERN = "(--|//)[^\n]*";
     private static final String COMMENT_PATTERN = MULTILINE_COMMENT_PATTERN + "|" + SINGLELINE_COMMENT_PATTERN;
 

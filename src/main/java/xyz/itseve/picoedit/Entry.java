@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import xyz.itseve.picoedit.controllers.EditorController;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Objects;
 
 public class Entry extends Application {

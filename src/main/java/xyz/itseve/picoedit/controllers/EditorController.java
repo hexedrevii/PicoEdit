@@ -1,13 +1,9 @@
 package xyz.itseve.picoedit.controllers;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
@@ -61,9 +57,7 @@ public class EditorController implements Initializable {
         mainStage = stage;
 
         // Set closure properties
-        mainStage.setOnCloseRequest((event) -> {
-            noticeUnsaved();
-        });
+        mainStage.setOnCloseRequest((event) -> noticeUnsaved());
 
         // Set focused properties
         mainStage.focusedProperty().addListener((obs, lost, found) -> {
@@ -127,7 +121,7 @@ public class EditorController implements Initializable {
     }
 
     // Hardcoded ignore patterns...
-    private List<String> ignorePatterns = new ArrayList<String>();
+    private List<String> ignorePatterns = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -316,7 +310,7 @@ public class EditorController implements Initializable {
                             } catch (IOException e) {
                                 Utilities.showBasicError("Could not delete file.", "File could not be deleted: " + e.getMessage());
                             }
-                        };
+                        }
                     });
 
                     setContextMenu(new ContextMenu(rn, del));
@@ -370,7 +364,6 @@ public class EditorController implements Initializable {
                     Optional<ButtonType> result = alert.showAndWait();
                     if (result.isEmpty() || result.get().getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
                         e.consume();
-                        return;
                     } else if (result.get().getButtonData() == ButtonBar.ButtonData.APPLY) {
                         handleSave();
                     }
@@ -387,23 +380,17 @@ public class EditorController implements Initializable {
 
             editor.textProperty().addListener((obs, oldText, newText) -> {
                 if (!allowHighlight) {
-                    Platform.runLater(() -> {
-                        editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), newText.length()));
-                    });
+                    Platform.runLater(() -> editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), newText.length())));
                     return;
                 }
 
                 Boolean isLuaFile = (Boolean) editor.getUserData();
                 if (isLuaFile == null || !isLuaFile) {
-                    Platform.runLater(() -> {
-                        editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), newText.length()));
-                    });
+                    Platform.runLater(() -> editor.setStyleSpans(0, StyleSpans.singleton(Collections.singleton("default"), newText.length())));
                     return;
                 }
 
-                Platform.runLater(() -> {
-                    editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(newText));
-                });
+                Platform.runLater(() -> editor.setStyleSpans(0, LuaHighlighter.computeHighlighting(newText)));
             });
 
             TabData data = (TabData)tab.getUserData();
@@ -523,6 +510,6 @@ public class EditorController implements Initializable {
         openedDir = file;
 
         // Empty expand patterns because... we cannot have any at this point.
-        Utilities.createTree(folderView, openedDir, ignorePatterns, new ArrayList<File>());
+        Utilities.createTree(folderView, openedDir, ignorePatterns, new ArrayList<>());
     }
 }
