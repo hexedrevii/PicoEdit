@@ -1,6 +1,7 @@
 package xyz.itseve.picoedit.controllers;
 
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -144,6 +145,12 @@ public class EditorController implements Initializable {
             }
         });
 
+        tabbedView.getTabs().addListener((ListChangeListener<? super Tab>) change -> {
+            if (tabbedView.getTabs().isEmpty()) {
+                mainStage.setTitle("PicoEditor");
+            }
+        });
+
         // Prioritise displaying by filename.
         folderView.setCellFactory(tv -> new TreeCell<>() {
             @Override
@@ -199,7 +206,7 @@ public class EditorController implements Initializable {
 
                                 getTreeItem().getChildren().sort(Comparator.comparing(t -> t.getValue().isFile()));
                             } else {
-                                Utilities.showBasicError("Could not create file", "File already exists or could not be created.");
+                                Utilities.showBasicError("Could not create Directory", "Directory already exists or could not be created.");
                             }
                         });
                     });
@@ -474,12 +481,7 @@ public class EditorController implements Initializable {
 
             mainStage.setTitle("PicoEditor (" + data.getAssociated().getName() + ")");
         } catch (IOException e) {
-            Alert error = new Alert(Alert.AlertType.ERROR);
-            error.setTitle("Unable to write file");
-            error.setContentText("The program could not write to the specified file " + e.getMessage());
-            error.setHeaderText(null);
-
-            error.showAndWait();
+            Utilities.showBasicError("Could not write to file","The program could not write to the specified file " + e.getMessage());
         }
     }
 
