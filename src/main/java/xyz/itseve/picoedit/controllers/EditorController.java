@@ -3,14 +3,19 @@ package xyz.itseve.picoedit.controllers;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import xyz.itseve.picoedit.Entry;
 import xyz.itseve.picoedit.utils.LuaHighlighter;
 import xyz.itseve.picoedit.models.TabData;
 import xyz.itseve.picoedit.utils.Utilities;
@@ -513,5 +518,25 @@ public class EditorController implements Initializable {
 
         // Empty expand patterns because... we cannot have any at this point.
         Utilities.createTree(folderView, openedDir, ignorePatterns, new ArrayList<>());
+    }
+
+    @FXML
+    private void triggerAbout() throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(Entry.class.getResource("about.fxml")));
+        Scene ab = new Scene(root);
+        ab.getStylesheets().add(
+            Objects.requireNonNull(
+                Entry.class.getResource("styles/about.css")
+            ).toExternalForm()
+        );
+
+        Stage dial = new Stage();
+        dial.setTitle("About PicoEdit");
+        dial.initModality(Modality.APPLICATION_MODAL);
+        dial.setScene(ab);
+        dial.initOwner(mainStage);
+        dial.setResizable(false);
+
+        dial.showAndWait();
     }
 }

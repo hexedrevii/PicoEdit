@@ -11,6 +11,15 @@
     </Menu>
     <Menu mnemonicParsing="false" text="View">
       <MenuItem mnemonicParsing="false" onAction="#toggleHighlight" text="Toggle syntax highlighting" />
+      <MenuItem mnemonicParsing="false" onAction="#triggerAbout" text="About PicoMapper" />
+    </Menu>
+    <Menu mnemonicParsing="false" text="Buttons">
+      <MenuItem mnemonicParsing="false" text="Left ID: 0" />
+      <MenuItem mnemonicParsing="false" text="Right ID: 1" />
+      <MenuItem mnemonicParsing="false" text="Up ID: 2" />
+      <MenuItem mnemonicParsing="false" text="Down ID: 3" />
+      <MenuItem mnemonicParsing="false" text="O ID: 4" />
+      <MenuItem mnemonicParsing="false" text="X ID: 5" />
     </Menu>
   </MenuBar>
   <SplitPane dividerPositions="0.290133779264214" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="160.0" prefWidth="200.0" styleClass="split" VBox.vgrow="ALWAYS">
